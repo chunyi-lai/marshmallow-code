@@ -1,0 +1,24 @@
+Weather data for Fort St. James, CA inserted successfully.
+Weather data for Abbey, CA inserted successfully.
+Weather data for Abbotsford, CA inserted successfully.
+Error while inserting new data. City: Abbotsford
+(psycopg2.errors.UniqueViolation) duplicate key value violates unique constraint "weather_city_id_key"
+DETAIL:  Key (city_id)=(5881791) already exists.
+
+[SQL: INSERT INTO weather (city_id, city_name, country, temp, feels_like, temp_min, temp_max, pressure, humidity, wind_speed, sunrise, sunset) VALUES (%(city_id)s, %(city_name)s, %(country)s, %(temp)s, %(feels_like)s, %(temp_min)s, %(temp_max)s, %(pressure)s, %(humidity)s, %(wind_speed)s, %(sunrise)s, %(sunset)s) RETURNING weather.weather_id]
+[parameters: {'city_id': 5881791, 'city_name': 'Abbotsford', 'country': 'CA', 'temp': 274.68, 'feels_like': 271.64, 'temp_min': 273.71, 'temp_max': 275.37, 'pressure': 1028, 'humidity': 84, 'wind_speed': 1.33, 'sunrise': datetime.datetime(1970, 1, 19, 17, 11, 26, 982000), 'sunset': datetime.datetime(1970, 1, 19, 17, 12, 13, 1000)}]
+(Background on this error at: http://sqlalche.me/e/14/gkpj)
+Something is wrong with inserting Weather data for Abbotsford
+Weather data for Aberdeen, CA inserted successfully.
+Weather data for Abitibi-Témiscamingue, CA inserted successfully.
+Weather data for Aboushagan Road, CA inserted successfully.
+Weather data for Acadia Valley, CA inserted successfully.
+Weather data for Acme, CA inserted successfully.
+Weather data for Acton, CA inserted successfully.
+Weather data for Acton Vale, CA inserted successfully.
+Weather data for Aden, CA inserted successfully.
+Weather data for Admiral, CA inserted successfully.
+Weather data for Agassiz, CA inserted successfully.
+Weather data for Agincourt, CA inserted successfully.
+Weather data for Aguanish, CA inserted successfully.
+Weather data for Airdrie, CA inserted successfully.
