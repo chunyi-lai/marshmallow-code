@@ -4,13 +4,14 @@ import time
 import requests
 
 # Get the city names from the local static file
-def getCityNamesFromFile(filePath):
+def getCityNamesFromFile(filePath, selectedCities):
     json_file = open(filePath, "rb")
     city_records = json.load(json_file)
 
     json_file.close()
 
-    return [city["name"] for city in city_records]
+    return [city["name"] for city in city_records 
+        if city["name"] in set(selectedCities)]
 
 # Get the api key for the wheather app
 def getConfig(filePath):

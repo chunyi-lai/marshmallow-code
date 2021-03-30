@@ -91,8 +91,8 @@ class Database():
                 pressure=new_data["pressure"],
                 humidity=new_data["humidity"],
                 wind_speed=new_data["wind_speed"],
-                sunrise=datetime.datetime.fromtimestamp(new_data["sunrise"] / 1e3),
-                sunset=datetime.datetime.fromtimestamp(new_data["sunset"] / 1e3)
+                sunrise=datetime.datetime.fromtimestamp(new_data["sunrise"]),
+                sunset=datetime.datetime.fromtimestamp(new_data["sunset"])
             )
             connection = self.engine.connect()
             connection.execute(statement)
@@ -113,8 +113,8 @@ class Database():
                 pressure=new_data["pressure"],
                 humidity=new_data["humidity"],
                 wind_speed=new_data["wind_speed"],
-                sunrise=datetime.datetime.fromtimestamp(new_data["sunrise"] / 1e3),
-                sunset=datetime.datetime.fromtimestamp(new_data["sunset"] / 1e3)
+                sunrise=datetime.datetime.fromtimestamp(new_data["sunrise"]),
+                sunset=datetime.datetime.fromtimestamp(new_data["sunset"])
             )
             connection = self.engine.connect()
             connection.execute(statement)
@@ -128,7 +128,10 @@ class Database():
         self.db_session.close()
 
 if __name__ == "__main__":
-    cities = ep.getCityNamesFromFile("ca.city.lst.json")
+    major_cities = ["Calgary", "Edmonton", "Red Deer", "Vancouver", "Surrey", 
+        "Kelowna", "Saskatoon", "Regina", "London", "Kingston", "Toronto", "Ottawa",
+        "Halifax", "Winnipeg"]
+    cities = ep.getCityNamesFromFile("ca.city.lst.json", major_cities)
     config = ep.getConfig("/config.json")
 
     api_key = config["key"]
@@ -153,6 +156,10 @@ if __name__ == "__main__":
 
     # print(ep.transform(test_dict))
 
+    db = Database(db_user=db_user, db_port=db_port, db_name=db_name, db_host=db_host, db_password=db_password)
+    db.setup_db_connection()
+
+
     for city in cities:
         city_data = requests.get(f"http://api.openweathermap.org/data/2.5/weather?q={city},ca&APPID={api_key}")
 
@@ -160,8 +167,6 @@ if __name__ == "__main__":
         transformed_data = ep.transform(city_data_dict)
         # print(transformed_data)
         ## Establish database connection
-        db = Database(db_user=db_user, db_port=db_port, db_name=db_name, db_host=db_host, db_password=db_password)
-        db.setup_db_connection()
 
         ## Insert data into the database
         success = db.insert_weather(transformed_data)
@@ -170,5 +175,6 @@ if __name__ == "__main__":
         else:
             print(f"Something is wrong with inserting Weather data for {city}")
 
-        db.close_session()
         time.sleep(2)
+    
+    db.close_session()
