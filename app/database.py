@@ -130,7 +130,8 @@ class Database():
 if __name__ == "__main__":
     major_cities = ["Calgary", "Edmonton", "Red Deer", "Vancouver", "Surrey", 
         "Kelowna", "Saskatoon", "Regina", "London", "Kingston", "Toronto", "Ottawa",
-        "Halifax", "Winnipeg"]
+        "Halifax", "Winnipeg", "Windsor", "Prince Albert", "St. John's", "Guelph",
+        "Kitchener", "Yellowknife"]
     cities = ep.getCityNamesFromFile("ca.city.lst.json", major_cities)
     config = ep.getConfig("/config.json")
 
