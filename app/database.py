@@ -141,21 +141,7 @@ if __name__ == "__main__":
     db_name = config["db_name"]
     db_password = config["db_password"]
 
-    # test_dict = {
-    #     'coord': {'lon': -114.0853, 'lat': 51.0501}, 
-    #     'weather': [{'id': 801, 'main': 'Clouds', 'description': 'few clouds', 'icon': '02n'}], 
-    #     'base': 'stations', 
-    #     'main': {'temp': 264.21, 'feels_like': 259.75, 'temp_min': 262.59, 'temp_max': 264.82, 'pressure': 1014, 'humidity': 47}, 
-    #     'visibility': 10000, 
-    #     'wind': {'speed': 1.34, 'deg': 273, 'gust': 2.24}, 
-    #     'clouds': {'all': 21}, 
-    #     'dt': 1617087270, 
-    #     'sys': {'type': 3, 'id': 2011327, 'country': 'CA', 'sunrise': 1617110131, 'sunset': 1617156333}, 
-    #     'timezone': -21600, 'id': 5913490, 'name': 'Calgary', 'cod': 200
-    # }
-
-    # print(ep.transform(test_dict))
-
+    ## Establish database connection
     db = Database(db_user=db_user, db_port=db_port, db_name=db_name, db_host=db_host, db_password=db_password)
     db.setup_db_connection()
 
@@ -165,8 +151,6 @@ if __name__ == "__main__":
 
         city_data_dict = json.loads(city_data.content.decode("utf-8"))
         transformed_data = ep.transform(city_data_dict)
-        # print(transformed_data)
-        ## Establish database connection
 
         ## Insert data into the database
         success = db.insert_weather(transformed_data)
