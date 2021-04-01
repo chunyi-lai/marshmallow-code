@@ -1,7 +1,8 @@
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
-from sqlalchemy import create_engine, insert
-import etl_process as ep
+from sqlalchemy import create_engine, insert, update
+from util import getCityNamesFromFile, getConfig, transform, MAJOR_CITIES
+# import etl_process as ep
 import requests
 import json
 import time
@@ -51,7 +52,7 @@ class Database():
                 self.weather.wind_speed,
                 self.weather.sunrise,
                 self.weather.sunset
-            ).filter(self.weather.city_name.lower() == city.lower()).first()
+            ).filter(self.weather.city_name == city).first()
 
             weather_record_dicts = {
                 "city_id": weather_record[0],
@@ -105,7 +106,7 @@ class Database():
     # Update weather for specific city
     def update_weather(self, new_data):
         try:
-            update(self.weather).where(self.weather.city_name.lower() == new_data["city_name"].lower()).values(
+            statement = update(self.weather).where(self.weather.city_name == new_data["city_name"]).values(
                 temp=new_data["temp"],
                 feels_like=new_data["feels_like"],
                 temp_min=new_data["temp_min"],
@@ -119,8 +120,9 @@ class Database():
             connection = self.engine.connect()
             connection.execute(statement)
             return True
-        except:
+        except Exception as e:
             print(f"Error while updating data. City: {new_data['city_name']}")
+            print(e)
             return False
     
     # close the session
@@ -128,12 +130,10 @@ class Database():
         self.db_session.close()
 
 if __name__ == "__main__":
-    major_cities = ["Calgary", "Edmonton", "Red Deer", "Vancouver", "Surrey", 
-        "Kelowna", "Saskatoon", "Regina", "London", "Kingston", "Toronto", "Ottawa",
-        "Halifax", "Winnipeg", "Windsor", "Prince Albert", "St. John's", "Guelph",
-        "Kitchener", "Yellowknife"]
-    cities = ep.getCityNamesFromFile("ca.city.lst.json", major_cities)
-    config = ep.getConfig("/config.json")
+    ## Run this main when initializing an empty database
+
+    cities = getCityNamesFromFile("ca.city.lst.json", MAJOR_CITIES)
+    config = getConfig("/config.json")
 
     api_key = config["key"]
     db_host = config["db_host"]
@@ -151,14 +151,14 @@ if __name__ == "__main__":
         city_data = requests.get(f"http://api.openweathermap.org/data/2.5/weather?q={city},ca&APPID={api_key}")
 
         city_data_dict = json.loads(city_data.content.decode("utf-8"))
-        transformed_data = ep.transform(city_data_dict)
+        transformed_data = transform(city_data_dict)
 
         ## Insert data into the database
-        success = db.insert_weather(transformed_data)
-        if success:
+        successful = db.insert_weather(transformed_data)
+        if successful:
             print(f"Weather data for {city}, CA inserted successfully.")
         else:
-            print(f"Something is wrong with inserting Weather data for {city}")
+            print(f"Something is wrong with inserting weather data for {city}")
 
         time.sleep(2)
     

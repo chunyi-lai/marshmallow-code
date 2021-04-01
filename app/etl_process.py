@@ -1,26 +1,13 @@
 from database import Database
+from util import getCityNamesFromFile, getConfig, transform, MAJOR_CITIES
 import json
 import time
 import requests
 
-# Get the city names from the local static file
-def getCityNamesFromFile(filePath, selectedCities):
-    json_file = open(filePath, "rb")
-    city_records = json.load(json_file)
-
-    json_file.close()
-
-    return [city["name"] for city in city_records 
-        if city["name"] in set(selectedCities)]
-
-# Get the api key for the wheather app
-def getConfig(filePath):
-    config_file = open(filePath, "rb")
-    config = json.load(config_file)
-    
-    config_file.close()
-
-    return config
+# major_cities = ["Calgary", "Edmonton", "Red Deer", "Vancouver", "Surrey", 
+#         "Kelowna", "Saskatoon", "Regina", "London", "Kingston", "Toronto", "Ottawa",
+#         "Halifax", "Winnipeg", "Windsor", "Prince Albert", "St. John's", "Guelph",
+#         "Kitchener", "Yellowknife"]
 
 def transform(weather_data):
     return {
@@ -40,7 +27,7 @@ def transform(weather_data):
 
 if __name__ == "__main__":
     ## Use S3 bucket to store the json file on AWS
-    cities = getCityNamesFromFile("ca.city.lst.json")
+    cities = getCityNamesFromFile("ca.city.lst.json", MAJOR_CITIES)
     config = getConfig("/config.json")
     
     api_key = config["key"]
@@ -48,15 +35,26 @@ if __name__ == "__main__":
     db_user = config["db_user"]
     db_port = config["db_port"]
     db_name = config["db_name"]
+    db_password = config["db_password"]
 
     while True:
+        ## Establish database connection
+        db = Database(db_user=db_user, db_port=db_port, db_name=db_name, db_host=db_host, db_password=db_password)
+        db.setup_db_connection()
+
         for city in cities:
-            weather_data = requests.get(f"http://api.openweathermap.org/data/2.5/weather?q={city},ca&APPID={api_key}")
-            transformed_data = transform(weather_data)
+            city_data = requests.get(f"http://api.openweathermap.org/data/2.5/weather?q={city},ca&APPID={api_key}")
+            
+            city_data_dict = json.loads(city_data.content.decode("utf-8"))
+            transformed_data = transform(city_data_dict)
 
-            ## Establish database connection
-            db = Database(db_user=db_user, db_port=db_port, db_name=db_name, db_host=db_host)
+            successful = db.update_weather(transformed_data)
+            if successful:
+                print(f"Weather data for {city}, CA updated successfully.")
+            else:
+                print(f"Something is wrong with updating weather data for {city}")
 
-            ## Sleep for 3 seconds between each api request to reduece api key over used
-            time.sleep(3)
-
+            ## Sleep for 1 second between each api request to reduece api key over used
+            time.sleep(1)
+        
+        db.close_session()
