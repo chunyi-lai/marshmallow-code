@@ -4,11 +4,6 @@ import json
 import time
 import requests
 
-# major_cities = ["Calgary", "Edmonton", "Red Deer", "Vancouver", "Surrey", 
-#         "Kelowna", "Saskatoon", "Regina", "London", "Kingston", "Toronto", "Ottawa",
-#         "Halifax", "Winnipeg", "Windsor", "Prince Albert", "St. John's", "Guelph",
-#         "Kitchener", "Yellowknife"]
-
 def transform(weather_data):
     return {
         "city_id": weather_data['id'],
