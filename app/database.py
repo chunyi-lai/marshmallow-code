@@ -2,7 +2,6 @@ from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, insert, update
 from util import getCityNamesFromFile, getConfig, transform, MAJOR_CITIES
-# import etl_process as ep
 import requests
 import json
 import time
@@ -36,8 +35,88 @@ class Database():
         # Establish session connection
         self.db_session = Session(self.engine)
 
+    def get_weather_for_all_cities(self):
+        try:
+            weather_records = self.db_session.query(
+                self.weather.city_id,
+                self.weather.city_name,
+                self.weather.country,
+                self.weather.temp,
+                self.weather.feels_like,
+                self.weather.temp_min,
+                self.weather.temp_max,
+                self.weather.pressure,
+                self.weather.humidity,
+                self.weather.wind_speed,
+                self.weather.sunrise,
+                self.weather.sunset
+            ).all()
+            weather_records_dicts = [
+                {
+                    "city_id": weather_record[0],
+                    "city_name": weather_record[1],
+                    "country": weather_record[2],
+                    "temp": weather_record[3],
+                    "feels_like": weather_record[4],
+                    "temp_min": weather_record[5],
+                    "temp_max": weather_record[6],
+                    "pressure": weather_record[7],
+                    "humidity": weather_record[8],
+                    "wind_speed": weather_record[9],
+                    "sunrise": weather_record[10],
+                    "sunset": weather_record[11]
+                }
+                for weather_record in weather_records
+            ]
+            return weather_records_dicts
+        except Exception as e:
+            print(f"Error while querying weather for all cities.")
+            print(e)
+        
+    
+    def get_weather_for_cities(self, cities):
+        try:
+            weather_records = self.db_session.query(
+                self.weather.city_id,
+                self.weather.city_name,
+                self.weather.country,
+                self.weather.temp,
+                self.weather.feels_like,
+                self.weather.temp_min,
+                self.weather.temp_max,
+                self.weather.pressure,
+                self.weather.humidity,
+                self.weather.wind_speed,
+                self.weather.sunrise,
+                self.weather.sunset
+            ).filter(self.weather.city_name.in_(cities)).all()
+            weather_records_dicts = [
+                {
+                    "city_id": weather_record[0],
+                    "city_name": weather_record[1],
+                    "country": weather_record[2],
+                    "temp": weather_record[3],
+                    "feels_like": weather_record[4],
+                    "temp_min": weather_record[5],
+                    "temp_max": weather_record[6],
+                    "pressure": weather_record[7],
+                    "humidity": weather_record[8],
+                    "wind_speed": weather_record[9],
+                    "sunrise": weather_record[10],
+                    "sunset": weather_record[11]
+                }
+                for weather_record in weather_records
+            ]
+            return weather_records_dicts
+        except Exception as e:
+            print(f"Error while querying weather for specific city: {cities}.")
+            print(e)
+
+            return []
+
+
     # Get weather data with specific city
-    def get_weather(self, city):
+    def get_weather_for_city(self, city):
         try:
             weather_record = self.db_session.query(
                 self.weather.city_id,
@@ -54,7 +133,7 @@ class Database():
                 self.weather.sunset
             ).filter(self.weather.city_name == city).first()
 
-            weather_record_dicts = {
+            weather_record_dict = {
                 "city_id": weather_record[0],
                 "city_name": weather_record[1],
                 "country": weather_record[2],
@@ -70,11 +149,12 @@ class Database():
             }
             self.db_session.commit()
 
-            return weather_record_dicts
+            return weather_record_dict
 
-        except:
+        except Exception as e:
             print(f"Error while querying weather for specific city: {city}.")
             print(f"City, {city}, might not exist in the server.")
+            print(e)
 
             return dict()
     
@@ -132,7 +212,7 @@ class Database():
 if __name__ == "__main__":
     ## Run this main when initializing an empty database
 
-    cities = getCityNamesFromFile("ca.city.lst.json", MAJOR_CITIES)
+    cities = getCityNamesFromFile("static/ca.city.lst.json", MAJOR_CITIES)
     config = getConfig("/config.json")
 
     api_key = config["key"]

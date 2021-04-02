@@ -22,7 +22,7 @@ def transform(weather_data):
 
 if __name__ == "__main__":
     ## Use S3 bucket to store the json file on AWS
-    cities = getCityNamesFromFile("ca.city.lst.json", MAJOR_CITIES)
+    cities = getCityNamesFromFile("static/ca.city.lst.json", MAJOR_CITIES)
     config = getConfig("/config.json")
     
     api_key = config["key"]
