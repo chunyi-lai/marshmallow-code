@@ -34,12 +34,7 @@ def get_selected_weathers():
         db = Database(db_user=db_user, db_port=db_port, db_name=db_name, 
             db_host=db_host, db_password=db_password)
         db.setup_db_connection()
-
-        ## Get the cities
-        # params = request.get_json()["cities"]
-        # print(params)
-
-        ## Obtain the result from the database
+        
         results = db.get_weather_for_all_cities()
 
         return jsonify(results), 200

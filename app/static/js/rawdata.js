@@ -1,84 +1,33 @@
-function dropdownMenu() {
+// Obtain all the weather data through the backend API
+var get_weather_for_all_cities = async () => {
+    var response = await fetch("/api/weathers");
+    var content = await response.json();
 
-    //creating all options 
-    var listNames = ["All", "Canada", "United States", "Australia", "Singapore"];
-    
-    //console.log(data);
-    //console.log(listNames);
-  
-    //selecting drop down menu designation
-    var dropdownMenu = d3.selectAll("#selDataset");
-    
-    //adding each option into drop down menu 
-    for (i=0; i<listNames.length; i++) {
-        dropdownMenu.append("option").text(listNames[i]);
-    };
-  
-  };
-  
-  dropdownMenu();
-  
+    return content;
+}
 
-var table = d3.select("tbody");
+// Update raw data table
+var update_weather_table = async () => {
+    var weather_data = await get_weather_for_all_cities();
 
-//Clear table before rendering 
-table.html(" ");
+    var table = d3.select("tbody");
 
-d3.json("/api/jobs").then( function(response) {
+    //Clear table before rendering
+    table.html("");
 
-    var jobPost = response["jobs"];
-    
-    //counting jobs by type of role (e.g. 1000 postings for job analyst roles)
-    jobPost[0].forEach(function(report) {
-        
-        var row = table.append("tr");
-
-        // Extracting data from each key value pair in the data dictionary
-    
-        Object.entries(report).forEach( function([key,value]) {
-            // Adding column 
-            var cell = row.append("td");
-            // Adding Value
-            cell.text(value);
-        });
+    weather_data.forEach((d) => {
+        var row = table.append("tr")
+        row.append("td").text(d["city_name"]);
+        row.append("td").text(d["temp"]);
+        row.append("td").text(d["feels_like"]);
+        row.append("td").text(d["temp_min"]);
+        row.append("td").text(d["temp_max"]);
+        row.append("td").text(d["pressure"]);
+        row.append("td").text(d["humidity"]);
+        row.append("td").text(d["wind_speed"]);
+        row.append("td").text(d["sunrise"]);
+        row.append("td").text(d["sunset"]);
     });
+}
 
-});
-
-function updateRawdata(countrySelected) {
-
-    //Clear table before rendering 
-    table.html(" ");
-
-    d3.json("/api/jobs").then( function(response) {
-
-        var jobPost = response["jobs"];
-        //console.log(jobPost);
-
-        //if countryselected is "ALL", default is to show results for all countries
-        if (countrySelected == "All") {
-            var filteredList = jobPost[0]}
-        else { //otherwise filter for selected country
-            var filteredList = jobPost[0].filter(d => d[2] == countrySelected)}
-
-        
-        //counting jobs by type of role (e.g. 1000 postings for job analyst roles)
-        filteredList.forEach(function(report) {
-        
-            var row = table.append("tr");
-    
-            // Extracting data from each key value pair in the data dictionary
-        
-            Object.entries(report).forEach( function([key,value]) {
-                // Adding column 
-                var cell = row.append("td");
-                // Adding Value
-                cell.text(value);
-            });
-        });
-    
-           
-    });
-
-
-};
+update_weather_table();

@@ -21,7 +21,7 @@ Coded by www.creative-tim.com
   <link rel="icon" type="image/png" href="./static/img/favicon.png">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <title>
-    Data Job Dashboard
+    Weather Report - Dashboard
   </title>
   <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
   <!--     Fonts and icons     -->
@@ -70,12 +70,6 @@ Coded by www.creative-tim.com
               <p>Raw Data</p>
             </a>
           </li>
-          <li class="active-pro">
-            <a href="/about">
-              <i class="nc-icon nc-badge"></i>
-              <p>About</p>
-            </a>
-          </li>
         </ul>
       </div>
     </div>
@@ -95,7 +89,7 @@ Coded by www.creative-tim.com
           </div>
           <!-- Following are search bar and notification toggle -->
           <div class="well">
-            <select id="selCity"  onchange="optionChanged(this.value)"></select>
+            <select id="selCity"  onchange="city_changed()"></select>
           </div>
         </div>
       </nav>
@@ -104,16 +98,15 @@ Coded by www.creative-tim.com
       <!-- End Navbar -->
       <div class="content">
         <div class="row">
-
-          <!-- Summary Card-->
+          <!-- City and sunrise time Card-->
           <div class= "col-lg-4 col-md-4 col-sm-12">
             <div class="card ">
               <div class="card-header ">
-                <h5 class="card-title">Summary</h5>
-                <p class="card-category">Weather Summary</p>
+                <h5 class="card-title">Day Light Hours</h5>
+                <p class="card-category">Sunrise and Sunset</p>
               </div>
               <div class="card-body ">
-                <div id="summary">
+                <div id="sun_light" style="height: 60px;">
                   <div class="spinner-border text-primary" role="status">
                     <span class="sr-only">Loading...</span>
                   </div>
@@ -131,7 +124,19 @@ Coded by www.creative-tim.com
                 <h5 class="card-title">Wind Speed</h5>
               </div>
               <div class="card-body ">
-                <div id="wind" style="height: 250px" ></div>
+                <div class="well">
+                  <select id="speed_unit" onchange="wind_speed_unit_changed()">
+                    <option value="m/s">m/s</option>
+                    <option value="km/h">km/h</option>
+                    <option value="mph">mph</option>
+                  </select>
+                </div>
+                <br/>
+                <div id="wind" style="height: 80px" >
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -143,7 +148,20 @@ Coded by www.creative-tim.com
                 <h5 class="card-title">Tempurature</h5>
               </div>
               <div class="card-body ">
-                <div id="tempurature" style="height: 250px"></div>
+                <div class="well">
+                  <select id="tempurature_unit" onchange="tempurature_unit_changed()">
+                    <option value="Kelvin">Kelvin</option>
+                    <option value="Celcius">Celcius</option>
+                    <option value="Fahrenheit">Fahrenheit</option>
+                  </select>
+                  </select>
+                </div>
+                <br/>
+                <div id="tempurature" style="height: 160px">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -154,26 +172,31 @@ Coded by www.creative-tim.com
           <div class= "col-lg-4 col-md-4 col-sm-12">
             <div class="card ">
               <div class="card-header ">
-                <h5 class="card-title">Leave Benefits</h5>
-                <p class="card-category">Ease To Take Leaves</p>
+                <h5 class="card-title">Pressure</h5>
+                <p class="card-category">Air Pressure in Hpa</p>
               </div>
-              <div id="pressure">
-                <div class="container">
-                  <p>Add Bubble Chart</p>
+              <div class="card-body ">
+                <div id="pressure" style="height: 80px">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
           <!-- Humidity-->
-          <div class= "col-lg-8 col-md-8 col-sm-12">
+          <div class= "col-lg-4 col-md-4 col-sm-12">
             <div class="card ">
               <div class="card-header ">
-                <h5 class="card-title">Weather Summary by country</h5>
+                <h5 class="card-title">Humidity</h5>
+                <p class="card-category">Humidity in Persentage</p>
               </div>
-              <div id="humidity">
-                <div class="container">
-                  <p>Add humidity information</p>
+              <div class="card-body ">
+                <div id="humidity" style="height: 80px">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -188,7 +211,7 @@ Coded by www.creative-tim.com
   <script src="./static/js/core/bootstrap.min.js"></script>
   <script src="./static/js/plugins/perfect-scrollbar.jquery.min.js"></script>
   <!-- Chart JS -->
-  <script src="./static/js/plugins/chartjs.min.js"></script>
+  <!-- <script src="./static/js/plugins/chartjs.min.js"></script> -->
   <!--  Notifications Plugin    -->
   <script src="./static/js/plugins/bootstrap-notify.js"></script>
   <!-- Control Center for Now Ui Dashboard: parallax effects, scripts for the example pages etc -->
@@ -196,18 +219,18 @@ Coded by www.creative-tim.com
   <!-- D3 -->
   <script src="https://d3js.org/d3.v6.min.js"></script>
   <!-- API key -->
-  <script type="text/javascript" src="../static/js/config.js"></script>
+  <!-- <script type="text/javascript" src="../static/js/config.js"></script> -->
   <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.3.3/dist/leaflet.js" integrity="sha512-tAGcCfR4Sc5ZP5ZoVz0quoZDYX5aCtEm/eu1KhSLj2c9eFrylXZknQYmxUssFaVJKvvc0dJQixhGjG2yXWiV9Q==" crossorigin=""></script>
+  <!-- <script src="https://unpkg.com/leaflet@1.3.3/dist/leaflet.js" integrity="sha512-tAGcCfR4Sc5ZP5ZoVz0quoZDYX5aCtEm/eu1KhSLj2c9eFrylXZknQYmxUssFaVJKvvc0dJQixhGjG2yXWiV9Q==" crossorigin=""></script> -->
   <!-- Event Lister Code **NEED TO ADD** -->
-  <script type="text/javascript" src="../static/js/optionChanged.js"></script>
+  <!-- <script type="text/javascript" src="../static/js/optionChanged.js"></script> -->
   <!-- Plotly plugin-->
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <!-- State Lookup tabel -->
-  <script type="text/javascript" src="../static/js/stateLookUp.js"></script>
+  <!-- <script type="text/javascript" src="../static/js/stateLookUp.js"></script> -->
   
   <!-- app.js -->
-  <script type="text/javascript" src="../static/js/app.js"></script>
+  <script type="text/javascript" src="../static/js/dashboard.js"></script>
 
   <!-- Summary  -->
   <!-- <script type="text/javascript" src="../static/js/summary.js"></script> -->
