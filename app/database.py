@@ -213,7 +213,7 @@ if __name__ == "__main__":
     ## Run this main when initializing an empty database
 
     cities = getCityNamesFromFile("static/ca.city.lst.json", MAJOR_CITIES)
-    config = getConfig("/config.json")
+    config = getConfig("/var/weather_config.json")
 
     api_key = config["key"]
     db_host = config["db_host"]
